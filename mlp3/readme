@@ -1,0 +1,59 @@
+Preprocessing
+tissueextraction,spm12,cannyfilter,2dwindow,3dwindow
+
+Features
+histograms,kernelpca,selectkbest,mutualinformation,ANOVA
+
+Model
+svm,randomforest,crossvalidation,gridsearch
+
+Description
+
+The spm12 matlab package was used to extract different brain tissues; grey-matter,
+white-matter and cerebrospinal fluid, increasing our data set four-fold.
+
+For feature engineering we divided each brain scan for our different brain
+tissues and the original scans into cubes of sizes from 8x8x8 up to 32x32x32
+and step sizes of half the dimensionality of the window sizes respectively.
+The voxel intensities were then used to construct histograms with 30 bins.
+
+As the borders of the image do not contain the brain we limited the space
+of our feature engineering to include only interesting brain matter.
+
+To reduce the dimensionality of each data set, 1000 features were picked from
+different dimensionality reduction techniques: KernalPCA with an RBF kernel,
+PCA and selectkbest with ANOVA against each label (the union of features
+for all labels was extracted). This reduced each data set to <3000 features.
+
+A similar process was taken for extracting 2d features using a Canny filter
+for each of the 4 data sets. For each direction x, y and z we used
+the same subset of 2d images and passed the Canny filter over each
+image. We used different values of sigma. Then we used 2d sliding windows
+of varying sizes from 10x10 to 80x80 to create 2 bin histograms (a Canny filter
+only returns values of 0s and 1s). These histograms were then reduced in
+a similar vein to the 3d features.
+
+For each dataset we used cross-validation to assess the performance of different
+of svm and random forests classifiers for each of the different labels. The
+last two projects showed that these two models produced the best results, so we
+focused on these. Parameter tuning of the different models was also performed
+using cross-validation.
+
+With cross validation scores for each one of our data sets and for each of our
+labels. The data sets were combined, through trail and error, to find which
+combinations improved our cv scores the best for the final submission.
+
+For the final submission we concatenated all our feature files together, and
+svm classifiers were found to perform best for predicting labels for gender, age
+and health.
+
+Running the predict final script produces the submission file which has been
+selection as our team's submission on Kaggle.
+
+The features_2d.py and features_3d.py scripts where used for feature extraction
+of the data files used, parameters were altered to create new data sets. It is
+included to demonstrate our feature extraction process.
+
+The model_selection_age.py , model_selection_gender.py and model_selection_health.py
+scripts where used for cross-validation. A single large feature file which
+is a concatenation of all our different feature files is taken as an argument.

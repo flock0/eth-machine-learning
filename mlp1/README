@@ -1,0 +1,29 @@
+Team name: Crystal balls and zodiacs
+Authors: Florian Chlan, Yuchen Tsai and Samuel Kessler
+
+# Feature engineering
+* a histogram of voxel intensities is produced from 3d sliding windows of varying width and step sizes.
+** for each window, voxels are binned into a histrogram of 8 bins
+** the bin ranges of the individual sliding windows are constant for all images
+** the histograms are area normalised
+* a 2d histogram of gradients is produced along each axis of each image
+* all features are appended into one big numpy array
+* all features are scaled to zero mean and unit variance
+
+# Model selection and hyper-parameter optimisation
+* different dimensionality reduction techniques are used including: PCA, Kernal PCA and select-k-best. These are to make the data set smaller and make cross-validation runtimes smaller
+* then cross-validation is performed to evaluate different models and estimate the mean squared error (MSE) for different models with different hyperparameters and different dimensionality reductions
+** different dimensionality reduction techniques are made and the number of features of each is varied before training different models
+** cross validation is done for a linear regression, ridge regression, lasso regression and support vector regression models
+** for each different type of regression model a grid search is made over hyper parameters
+** the best regression model with lowest MSE is selected for submission (we also check the standard deviation of the MSE across all folds of cv to check it does not vary too much)
+* Support vector regression performed the best and was used for the final submission
+
+# Running the scripts
+extract_features.py : extracts features from images and returns a data file in .npy format
+features_2d.py: called by extract_features.py
+features_3d.py: called by extract_features.py
+myutil.py: helper functions
+3_model_selection_grid_search.py: takes in as an argurment a .npy data file and prints out the evaluation of different models
+predict.py: takes in a .npy data file and produces a .csv file for submission onto Kaggle
+predict_final.py: for final Kaggle submission run this - calls extract_features.py and predict.py

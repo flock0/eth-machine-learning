@@ -1,0 +1,47 @@
+Preprocessing
+cannyfilter,2dwindow,3dwindow
+
+Features
+histograms,kernelpca,selectkbest,mutual_info_classif
+
+Model
+svm,logisticregression,randomforest,crossvalidation,gridsearch
+
+Description
+
+Preprocessing and Features
+
+As the borders of the image do not contain the brain we limited the space
+of our feature engineering to include only interesting brain matter.
+
+For feature engineering we divided each brain scan into cubes of size 8x8x8
+to 32x32x32 and made 8 bin histograms of voxel intensities. Then these
+histograms were appended to the feature vector of each brain scan.
+
+A similar process was taken for extracting 2d features: a sample of 2d images
+were taken for each direction in x, y and z. Sliding windows of sizes varying
+from 10x10 to 80x80 were subsequently used to create 8 bin histograms of
+pixel intensities. Then these histograms were appended to a parameter vector.
+
+We also used the Canny filter. For each direction x, y and z we used
+the same subset of 2d images for each brain scan and passed the Canny filter over each
+2d image. We used different values of sigma as well. Then we used 2d sliding windows
+of varying sizes from 10x10 to 80x80 to create 2 bin histograms (a Canny filter
+only returns values of 0s and 1s). These histograms were then appended to
+our feature vector.
+
+The dimensionality of these data sets were reduced separately using selectkbest
+with mutual information, kernel-pca with an rbf kernel and vanilla pca;
+the first couple hundred features were taken from each and merged into
+a single dataset for training and testing.
+
+Model Selection Process
+
+We used cross-validation to assess the performance of different classifiers.
+The classifiers included: binary logistic regression, svm, random forests
+and gradient boosting. Parameter tuning of the different models was
+also performed using cross-validation.
+
+A random forest classifier reduced the cross-validation error the most and had
+the lowest variance over folds of kfold cross validation. So this was used for
+the final prediction.
